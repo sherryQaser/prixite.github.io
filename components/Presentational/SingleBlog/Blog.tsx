@@ -45,8 +45,9 @@ export default function Blog({ blog }: { blog: BlogPost }) {
               className="icons"
             >
               <FacebookShareButton
-                url={`${process.env.NEXT_PUBLIC_BASEPATH || 'prixite.com'}/${router.asPath
-                  }`}
+                url={`${process.env.NEXT_PUBLIC_BASEPATH || 'prixite.com'}/${
+                  router.asPath
+                }`}
               >
                 <Image
                   src={joinUsLinkIcons[0].icon.src}
@@ -57,8 +58,9 @@ export default function Blog({ blog }: { blog: BlogPost }) {
                 />
               </FacebookShareButton>
               <LinkedinShareButton
-                url={`${process.env.NEXT_PUBLIC_BASEPATH || 'prixite.com'}/${router.asPath
-                  }`}
+                url={`${process.env.NEXT_PUBLIC_BASEPATH || 'prixite.com'}/${
+                  router.asPath
+                }`}
               >
                 <Image
                   src={joinUsLinkIcons[1].icon.src}
@@ -83,9 +85,7 @@ export default function Blog({ blog }: { blog: BlogPost }) {
         <Container className="likes" maxWidth="xl">
           <Stack direction={'row'} gap={10}>
             <Stack direction={'row'} gap={1} alignItems="center">
-              <Typography fontSize={13}>
-                Written by {blog.blogger}
-              </Typography>
+              <Typography fontSize={13}>Written by {blog.blogger}</Typography>
             </Stack>
           </Stack>
           <Stack
