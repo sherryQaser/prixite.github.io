@@ -6,12 +6,10 @@ import storage from 'redux-persist/lib/storage'
 
 const persistConfig = {
   key: 'root',
-  storage
-};
-const reducer = {
-
+  storage,
 }
-const persistedReducer = persistReducer(persistConfig, imageReducer);
+const reducer = {}
+const persistedReducer = persistReducer(persistConfig, imageReducer)
 export const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== 'production',
