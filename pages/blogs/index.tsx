@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box, Typography, Container, Button } from '@mui/material'
 import { newsAndBlogs } from '../../data/data'
 import { BlogPost } from '../../types/interfaces'
@@ -6,9 +6,31 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import axios from 'axios'
+import { useAppSelector } from '../../redux/hooks'
+// import { store } from '../../redux/store'
+// import { setAllBlogs } from '../../redux/features/blogSlice'
 
-const Blog = ({ blogs }: { blogs: BlogPost[] }) => {
+const Blog = () => {
   const { title, header } = newsAndBlogs
+  const [blogsData, setBlogsData] = React.useState<BlogPost[]>()
+  const allBlogs = useAppSelector((state) => state.blogReducers.allBlogs)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/blog/blogs`)
+        const data = await response.data.data
+        setBlogsData(data)
+      } catch (error) {
+        console.error('Error fetching blog data:', error)
+      }
+    }
+    if (allBlogs.length > 0) {
+      setBlogsData(allBlogs)
+    } else {
+      fetchData()
+    }
+  }, [allBlogs, blogsData])
+  if (!blogsData) return <div>loading...</div>
 
   return (
     <>
@@ -34,7 +56,7 @@ const Blog = ({ blogs }: { blogs: BlogPost[] }) => {
       </Container>
 
       <Container maxWidth="xl" className="posts">
-        {blogs?.map((post: BlogPost, index: number) => (
+        {blogsData?.map((post: BlogPost, index: number) => (
           <div className="card" key={index}>
             <Image
               src={`https://stg-erp.prixite.com/${post.meta_image}`}
@@ -65,31 +87,37 @@ const Blog = ({ blogs }: { blogs: BlogPost[] }) => {
 
 export default Blog
 
-export async function getStaticProps() {
-  try {
-    const headers = {
-      Authorization: `token ${process.env.NEXT_PUBLIC_ERP_AUTH_TOKEN}`,
-    }
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_ERP_BASEPATH}/api/resource/Blog%20Post?fields=[%22*%22]`,
-      {
-        headers,
-      }
-    )
-    const blogs = response.data.data?.filter(
-      (blog: BlogPost) => blog?.published === 1
-    )
-    return {
-      props: {
-        blogs: blogs,
-      },
-    }
-  } catch (error) {
-    console.error('Error fetching blog data:', error)
-    return {
-      props: {
-        blogs: [],
-      },
-    }
-  }
-}
+// export async function getServerSideProps() {
+//   try {
+//     const headers = {
+//       Authorization: `token ${process.env.NEXT_PUBLIC_ERP_AUTH_TOKEN}`,
+//     }
+//     const storeData = store.getState().blogReducers.allBlogs
+//     let response
+//     if (storeData.length === 0) {
+//       response = await axios.get(
+//         `${process.env.NEXT_PUBLIC_ERP_BASEPATH}/api/resource/Blog%20Post?fields=[%22*%22]`,
+//         {
+//           headers,
+//         }
+//       )
+//       response = response.data.data?.filter(
+//         (blog: BlogPost) => blog?.published === 1
+//       )
+//       store.dispatch(setAllBlogs(response))
+//     }
+
+//     return {
+//       props: {
+//         blogs: response,
+//       },
+//     }
+//   } catch (error) {
+//     console.error('Error fetching blog data:', error)
+//     return {
+//       props: {
+//         blogs: [],
+//       },
+//     }
+//   }
+// }

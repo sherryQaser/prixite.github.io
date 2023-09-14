@@ -1,17 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit'
-import imageReducer from './features/ImageSlice'
+import blogReducers from './features/blogSlice'
 import { setupListeners } from '@reduxjs/toolkit/dist/query'
-import { persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
+// import { persistReducer } from 'redux-persist'
+// import storage from 'redux-persist/lib/storage'
 
-const persistConfig = {
-  key: 'root',
-  storage,
-}
-const reducer = {}
-const persistedReducer = persistReducer(persistConfig, imageReducer)
+// const persistConfig = {
+//   key: 'root',
+//   storage,
+// }
+// const reducer = {}
+// const persistedReducer = persistReducer(persistConfig, blogReducers)
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: {
+    blogReducers,
+  },
   devTools: process.env.NODE_ENV !== 'production',
 })
 

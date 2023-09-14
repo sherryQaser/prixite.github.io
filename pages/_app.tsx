@@ -35,6 +35,7 @@ import '../components/Presentational/HomeContainer/HomeContainer.scss'
 import '../components/Smart/HeaderMenu/HeaderMenu.scss'
 import '../components/Smart/Category/Category.scss'
 import '../components/Shared/layout/layout.scss'
+import { Providers } from '../redux/provider'
 
 let theme = createTheme({
   breakpoints: {
@@ -65,9 +66,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="shortcut icon" type="image/x-icon" href={favicon.src} />
       </Head>{' '}
       <ThemeProvider theme={theme}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <Providers>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </Providers>
       </ThemeProvider>
     </>
   )

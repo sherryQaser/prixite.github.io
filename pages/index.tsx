@@ -34,11 +34,12 @@ import {
   PRODUCT_PATH,
 } from '../utils/constants'
 import { FEATURES } from '../data/features'
-// import { data } from '../data/blogdata'
+import { useAppSelector } from '../redux/hooks'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
+// import { data } from '../data/blogdata'
 
 export default function Home({
-  blogs,
   services,
   testimonials,
   aboutUs,
@@ -57,7 +58,24 @@ export default function Home({
   } = newsAndBlogs
   // eslint-disable-next-line
   const router = useRouter()
-
+  const [blogsData, setBlogsData] = useState<BlogPost[]>()
+  const allBlogs = useAppSelector((state) => state.blogReducers.allBlogs)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/blog/blogs`)
+        const data = await response.data.data
+        setBlogsData(data)
+      } catch (error) {
+        console.error('Error fetching blog data:', error)
+      }
+    }
+    if (allBlogs.length > 0) {
+      setBlogsData(allBlogs)
+    } else {
+      fetchData()
+    }
+  }, [allBlogs, blogsData])
   return (
     <>
       <Head>
@@ -140,7 +158,7 @@ export default function Home({
               <Typography my={3}>{newsHeading}</Typography>
 
               <Container maxWidth="xl" className="posts" disableGutters>
-                {blogs?.map((blog, index: number) => (
+                {blogsData?.slice(0, 2)?.map((blog, index: number) => (
                   <div className="card" key={index}>
                     <Link href={`/blog/${blog.name}`}>
                       <Image
@@ -231,23 +249,6 @@ export default function Home({
 }
 
 export async function getStaticProps() {
-  let blogs = []
-  try {
-    const headers = {
-      Authorization: `token ${process.env.NEXT_PUBLIC_ERP_AUTH_TOKEN}`,
-    }
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_ERP_BASEPATH}/api/resource/Blog%20Post?fields=[%22*%22]`,
-      {
-        headers,
-      }
-    )
-    blogs = response.data.data?.filter(
-      (blog: BlogPost) => blog?.published === 1
-    )
-  } catch (error) {
-    console.error('Error fetching blog data:', error)
-  }
   const serviceFiles = fs.readdirSync(path.join(SERVICES_PATH))
   const testimonialFiles = fs.readdirSync(path.join(TESTIMONIALS_PATH))
   const productFiles = fs.readdirSync(path.join(PRODUCT_PATH))
@@ -262,7 +263,6 @@ export async function getStaticProps() {
 
   return {
     props: {
-      blogs: blogs.slice(0, 2),
       services: services.sort(sortByIndex),
       testimonials: testimonials.sort(sortByDate),
       aboutUs: aboutUs.props,
